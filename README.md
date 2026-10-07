@@ -50,10 +50,11 @@ php artisan optimize
 | `/examples/records/new` | `examples.records.create` | Contoh form tambah |
 | `/examples/records/detail` | `examples.records.show` | Contoh halaman detail |
 | `/examples/records/edit` | `examples.records.edit` | Contoh form edit |
-| `/login` | `login` | Tampilan masuk |
+| `/login` | `login` | Masuk (Laravel Fortify) |
+| `/forgot-password` | `password.request` | Lupa kata sandi |
 | `/demo/404` | `demo.404` | Demo halaman 404 |
 
-Halaman login dan semua contoh data masih berupa presentational UI. Form contoh hanya menampilkan toast; tidak menyimpan data. Hubungkan autentikasi, validasi server, dan persistensi sesuai kebutuhan proyek nyata.
+Autentikasi (login, logout, atur ulang kata sandi, pembaruan profil dan kata sandi) sudah terhubung lewat Laravel Fortify dan semua halaman admin dilindungi middleware `auth`; lihat `docs/integrasi/auth.md`. Semua contoh data dan form contoh masih berupa presentational UI: form contoh hanya menampilkan toast dan tidak menyimpan data. Hubungkan validasi server dan persistensi sesuai kebutuhan proyek nyata.
 
 ## Kustomisasi starter kit
 

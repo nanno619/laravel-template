@@ -1,27 +1,30 @@
 # 🔐 Autentikasi & produksi
 
-Halaman `/login` saat ini hanyalah presentasi: tombol “Masuk” berupa tautan ke dashboard; kolom email/password bukan form yang mengirim kredensial. Route dashboard juga belum memakai middleware autentikasi. Integrasikan fitur login dari pilihan autentikasi Laravel proyek Anda atau implementasikan controller/session sendiri sebelum memakai halaman ini sebagai gerbang akses.
+Autentikasi memakai [Laravel Fortify](https://laravel.com/docs/fortify) (headless: Fortify menyediakan route dan logika, view Blade disediakan starter kit ini). Fitur yang aktif ada di `config/fortify.php`: login/logout, atur ulang kata sandi, serta pembaruan profil dan kata sandi dari halaman pengaturan. Registrasi, verifikasi email, dua langkah, dan passkey **dinonaktifkan**.
 
-## 🔑 Hubungkan view login
+## 🔑 Login dan view
 
-Saat membangun login sesungguhnya, ubah blok input di `resources/views/auth/login.blade.php` menjadi form `method="POST"` yang mengirim ke `route('login.store')`, dengan `@csrf`, kontrol dengan `name="email"` dan `name="password"`, opsi `remember` bila digunakan, serta tombol submit “Masuk”. Gunakan `old('email')` dan `$errors` untuk menampilkan kegagalan autentikasi. Route bernama `login.store` pada contoh ini **harus Anda daftarkan sendiri** atau sesuaikan dengan paket autentikasi yang dipilih.
+View didaftarkan di `app/Providers/FortifyServiceProvider.php`:
 
-Controller login harus memvalidasi input, menjalankan autentikasi Laravel, dan meregenerasi sesi setelah berhasil. Logout harus mengakhiri sesi dan meregenerasi token CSRF. Jika menggunakan starter kit/paket autentikasi yang sudah menyediakan route login bernama `login`, periksa konflik dengan `Route::view('/login', 'auth.login')->name('login')` yang ada sekarang dan ganti route tersebut sesuai instalasi Anda.
+| View | Route | Berkas |
+| --- | --- | --- |
+| Masuk | `login` / `login.store` | `resources/views/auth/login.blade.php` |
+| Lupa kata sandi | `password.request` / `password.email` | `resources/views/auth/forgot-password.blade.php` |
+| Atur ulang kata sandi | `password.reset` / `password.update` | `resources/views/auth/reset-password.blade.php` |
 
-## 🛡️ Lindungi route admin
+Ketiganya memakai `<x-auth.shell>` (`resources/views/components/auth/shell.blade.php`). Login dibatasi 5 percobaan per menit per email+IP. Setelah login, pengguna diarahkan ke `/dashboard` (`home` di `config/fortify.php`). Tombol **Keluar** ada di sidebar dan mengirim `POST /logout`.
 
-Setelah login tersedia, tambahkan middleware `auth` pada halaman privat (misalnya dashboard, analitik, settings, serta CRUD). Jangan memasukkan route login atau halaman 404 publik ke dalam grup ini.
+Pengaturan akun (`/settings`) mengirim `PUT user/profile-information` dan `PUT user/password`. Pesan galat tampil per bag (`updateProfileInformation`, `updatePassword`).
 
-```php
-Route::middleware('auth')->group(function () {
-    Route::view('/dashboard', 'admin.dashboard')->name('admin.dashboard');
-    Route::view('/analytics', 'admin.analytics')->name('admin.analytics');
-    Route::view('/settings', 'admin.settings')->name('admin.settings');
-    // Route CRUD privat yang ditambahkan di sini.
-});
-```
+Untuk membuat pengguna pertama: `php artisan db:seed` (membuat `test@example.com`, kata sandi `password`) atau `php artisan tinker`. Ganti sebelum produksi.
 
-Lindungi juga setiap operasi tulis dengan pemeriksaan izin sesuai aturan proyek. Identitas pengguna di sidebar (`resources/views/components/admin/sidebar.blade.php`) dan sebagian info di header masih teks contoh; tampilkan identitas dari `auth()->user()` setelah route benar-benar terlindungi.
+Email atur ulang kata sandi memakai driver `MAIL_MAILER` di `.env` (default `log`, lihat `storage/logs`).
+
+## 🛡️ Route admin
+
+Dashboard, analitik, pengaturan, katalog komponen, dan contoh entri berada di dalam `Route::middleware('auth')` pada `routes/web.php`. Route CRUD baru yang privat juga harus masuk ke grup ini. `/demo/404` dan `/testing` tetap publik; hapus atau lindungi `/testing` sebelum produksi.
+
+Lindungi juga setiap operasi tulis dengan pemeriksaan izin (Policy/Gate) sesuai aturan proyek.
 
 ## 🚢 Saat deploy
 

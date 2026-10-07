@@ -63,7 +63,6 @@ return [
         ['label' => 'Halaman', 'items' => [
             ['label' => 'Pengaturan akun', 'route' => 'admin.settings', 'active' => 'admin.settings', 'icon' => 'settings'],
             ['id' => 'auth', 'label' => 'Otentikasi', 'icon' => 'lock', 'children' => [
-                ['label' => 'Masuk', 'route' => 'login', 'active' => 'login'],
                 ['label' => 'Kesalahan 404', 'route' => 'demo.404', 'active' => 'demo.404'],
             ]],
         ]],

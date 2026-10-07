@@ -47,11 +47,19 @@
         <a href="#" class="nav-link mb-1">
             <x-ui.icon name="help" class="h-4 w-4 shrink-0" /><span class="sb-label">Bantuan</span>
         </a>
-        <a href="{{ route('admin.settings') }}" class="flex items-center gap-2.5 rounded-md p-2 hover:bg-accent focus-ring">
-            <span class="avatar avatar-sm">AR</span>
-            <span class="sb-label min-w-0 flex-1 leading-tight"><span class="block truncate text-sm font-medium">Ayu Rahmawati</span><span class="block truncate text-xs text-muted-foreground">ayu@kopikenanga.id</span></span>
-            <x-ui.icon name="updown" class="sb-label h-4 w-4 shrink-0 text-muted-foreground" />
-        </a>
+        @auth
+            <a href="{{ route('admin.settings') }}" class="flex items-center gap-2.5 rounded-md p-2 hover:bg-accent focus-ring">
+                <span class="avatar avatar-sm">{{ auth()->user()->initials }}</span>
+                <span class="sb-label min-w-0 flex-1 leading-tight"><span class="block truncate text-sm font-medium">{{ auth()->user()->name }}</span><span class="block truncate text-xs text-muted-foreground">{{ auth()->user()->email }}</span></span>
+                <x-ui.icon name="updown" class="sb-label h-4 w-4 shrink-0 text-muted-foreground" />
+            </a>
+            <form method="POST" action="{{ route('logout') }}" class="mt-1">
+                @csrf
+                <button type="submit" class="nav-link">
+                    <x-ui.icon name="logout" class="h-4 w-4 shrink-0" /><span class="sb-label">Keluar</span>
+                </button>
+            </form>
+        @endauth
     </div>
 </aside>
 

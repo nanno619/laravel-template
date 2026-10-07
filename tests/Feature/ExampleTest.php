@@ -2,13 +2,33 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actingAs(User::factory()->create());
+    }
+
     public function test_home_redirects_to_dashboard(): void
     {
         $this->get('/')->assertRedirect('/dashboard');
+    }
+
+    public function test_guest_pages_render_successfully(): void
+    {
+        $this->app['auth']->logout();
+
+        foreach (['/login', '/forgot-password'] as $path) {
+            $this->get($path)->assertOk()->assertSee('Kopi Kenanga');
+        }
     }
 
     public function test_kenanga_pages_render_successfully(): void
@@ -31,7 +51,6 @@ class ExampleTest extends TestCase
             '/examples/records/new',
             '/examples/records/detail',
             '/examples/records/edit',
-            '/login',
             '/demo/404',
         ];
 
