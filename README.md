@@ -6,15 +6,26 @@ Panduan lengkap tersedia di situs VitePress dalam `docs/`: jalankan `npm run doc
 
 ## Menjalankan proyek
 
+Prasyarat: PHP 8.2+, Composer, Node.js, dan MySQL (atau ubah `DB_CONNECTION` di `.env`, misalnya ke `sqlite`).
+
 ```bash
 composer install
 npm install
-copy .env.example .env
+cp .env.example .env
 php artisan key:generate
-php artisan migrate
+```
+
+Buat database kosong sesuai `DB_DATABASE` di `.env` (default `laravel`), sesuaikan `APP_URL`, `DB_USERNAME`, dan `DB_PASSWORD` bila perlu, lalu:
+
+```bash
+php artisan migrate --seed
 npm run dev
 php artisan serve
 ```
+
+Jika memakai Laravel Herd atau Valet, lewati `php artisan serve` dan setel `APP_URL` ke alamat situs Anda, misalnya `https://nama-folder.test`.
+
+Masuk di `/login` dengan pengguna dari seeder: `test@example.com` / `password`. Ganti atau hapus pengguna ini di `database/seeders/DatabaseSeeder.php` sebelum produksi.
 
 Untuk build produksi:
 
